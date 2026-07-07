@@ -6,7 +6,7 @@
 #include "EZ-Template/api.hpp"
 #include "Claw.hpp"
 
-int lM1 = -11; 
+int lM1 = -10; 
 int lM2 = 13;
 int lM3 = -19;
 int rM1 = 12; 
