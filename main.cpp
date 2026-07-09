@@ -275,7 +275,7 @@ void opcontrol() {
     chassis.opcontrol_tank();  // Tank control
   
    
-    Intake_control(); // go to Intake.hpp to see the code for the intake
+   
 
      
     PTO_piston.button_toggle(master.get_digital(DIGITAL_A));  
@@ -321,6 +321,6 @@ void opcontrol() {
             // 3. Update the last press timestamp
             last_press_time = current_time;
         }
-    pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+    pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  
   }
 }
