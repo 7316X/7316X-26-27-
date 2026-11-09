@@ -1,25 +1,24 @@
 #include "main.h"
 #include "Winch.hpp"
-#include "Chain_Lift.hpp"
 #include "PTO.hpp"
-#include "Intake.hpp"
+#include "Pivot.hpp"
 #include "EZ-Template/api.hpp"
 #include "Claw.hpp"
 
-int lM1 = -10; 
-int lM2 = 13;
-int lM3 = -19;
-int rM1 = 12; 
-int rM2 = -20;
-int rM3 = 18;
+int rM1 = 8; 
+int rM2 = -9;
+// int rM3 = 0;
+int lM1 = 2; 
+int lM2 = -3;
+// int lM3 = 0;
 
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {lM1, lM2, lM3},     // Left Chassis Ports (negative port will reverse it!)
-    {rM1, rM2, rM3},  // Right Chassis Ports (negative port will reverse it!)
+    {lM1, lM2},     // Left Chassis Ports (negative port will reverse it!)
+    {rM1, rM2},  // Right Chassis Ports (negative port will reverse it!)
 
-    4,      // IMU Port
+    11,      // IMU Port
     3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     450);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
@@ -28,8 +27,8 @@ ez::Drive chassis(
 //  - you should get positive values on the encoders going FORWARD and RIGHT
 // - `2.00` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
- ez::tracking_wheel horiz_tracker(11, 2.00, 4.0);  // This tracking wheel is perpendicular to the drive wheels
- ez::tracking_wheel vert_tracker(16, 2.00, 4.0);   // This tracking wheel is parallel to the drive wheels
+ ez::tracking_wheel horiz_tracker(6, 2.00, 4.0);  // This tracking wheel is perpendicular to the drive wheels
+ ez::tracking_wheel vert_tracker(7, 2.00, 4.0);   // This tracking wheel is parallel to the drive wheels
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -60,44 +59,48 @@ void initialize() {
   // Set the drive to your own constants from autons.cpp!
   default_constants();
 
+//  Lift_task;
+
+  
+
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
   // chassis.opcontrol_curve_buttons_left_set(pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT);  // If using tank, only the left side is used.
   // chassis.opcontrol_curve_buttons_right_set(pros::E_CONTROLLER_DIGITAL_Y, pros::E_CONTROLLER_DIGITAL_A);
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-     { "PP_TEST", PP_TEST},
+     { "Rightside", Rightside},
+      { "Skills_Rightside", Skills_Rightside},
 
 
-
-      {"Drive\n\nDrive forward and come back", drive_example},
-      {"Turn\n\nTurn 3 times.", turn_example},
-      {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
-      {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
-      {"Swing Turn\n\nSwing in an 'S' curve", swing_example},
-      {"Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining},
-      {"Combine all 3 movements", combining_movements},
-      {"Interference\n\nAfter driving forward, robot performs differently if interfered or not", interfered_example},
-      {"Simple Odom\n\nThis is the same as the drive example, but it uses odom instead!", odom_drive_example},
-      {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
+      // {"Drive\n\nDrive forward and come back", drive_example},
+      // {"Turn\n\nTurn 3 times.", turn_example},
+      // {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
+      // {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
+      // {"Swing Turn\n\nSwing in an 'S' curve", swing_example},
+      // {"Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining},
+      // {"Combine all 3 movements", combining_movements},
+      // {"Interference\n\nAfter driving forward, robot performs differently if interfered or not", interfered_example},
+      // {"Simple Odom\n\nThis is the same as the drive example, but it uses odom instead!", odom_drive_example},
+      // {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
       {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
       {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
       {"Boomerang Pure Pursuit\n\nGo to (0, 24, 45) on the way to (24, 24) then come back to (0, 0, 0)", odom_boomerang_injected_pure_pursuit_example},
       {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
   });
  //tare the positions of the Chain lift and the Winch motors
-  L_Winch.tare_position();
-  R_Winch.tare_position();
-  L_Lift.tare_position();
-  R_Lift.tare_position();
+   //Lift_1.tare_position();
+   //Lift_2.tare_position();
+  //Lift_set_0();
+  Pivot_set_0();
+ 
 
-  winchPID.exit_condition_set(80, 50, 300, 150, 500, 500); /*Sets the exit conditions for the Winch PID*/
+  //winchPID.exit_condition_set(80, 50, 300, 150, 500, 500); /*Sets the exit conditions for the Winch PID*/
   LiftPID.exit_condition_set(80, 50, 300, 150, 500, 500); /*Sets the exit conditions for the Chain Lift PID*/
 
 
   //Once the code starts running, make the Flipper pistons in the starting position (retracted)
-   Flip1.set(false);
-   Flip2.set(true);
+  
 
   // Initialize chassis and auton selector
   chassis.initialize();
@@ -145,6 +148,8 @@ void autonomous() {
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
 
+ Lift_Task.resume();
+//  Pivot_Task.resume();
   /*
   Odometry and Pure Pursuit are not magic
 
@@ -264,9 +269,64 @@ void ez_template_extras() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+constexpr double SIX_GEAR   = 84.0 / 36.0;  // six-bar motor revs per arm rev
+constexpr double TWO_GEAR   = 3.0;          // 2-bar motor revs per arm rev
+constexpr double LIFT_RATIO = 1.65;         // 2-bar arm speed / six-bar arm speed
+constexpr double ARM_RPM    = 38;           // six-bar ARM speed
+constexpr double SLOW_FACTOR = 0.45;          // Y button speed as a fraction of ARM_RPM (0.4 = ~15rpm)
+constexpr double TWO_DOWN_FACTOR = 0.90;   // 2-bar speed on the way down, as a fraction of its up speed (1.0 = same as up)
+constexpr double VERY_SLOW_FACTOR = 0.2;   // (0.2 = ~7.6 rpm)
+
+
+
+  // claw spin after R2 release, then lift pulse
+  bool r2WasPressed = false;
+  uint32_t clawHoldUntil = 0;
+  constexpr uint32_t CLAW_HOLD_MS = 1000;
+  uint32_t clawPulseStart = 0;
+  uint32_t clawPulseEnd   = 0;
+  constexpr uint32_t CLAW_LIFT_PULSE_MS     = 350;
+  constexpr double   CLAW_LIFT_PULSE_FACTOR = 0.7;   // negative = down
+
+
+
+
+bool upWasPressed = false;
+uint32_t liftPulseUntil = 0;
+constexpr uint32_t LIFT_PULSE_MS     = 150;  // how long the pulse lasts
+constexpr double   LIFT_PULSE_FACTOR = 0.7;  // pulse speed as a fraction of ARM_RPM
+
+
+
+
+
+
+
+
 void opcontrol() {
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
+
+  // Lift_Task.suspend();
+  //  Pivot_Task.suspend();
+
+  // Lift_1.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  // Lift_2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+ //  Lift_Task.suspend();
+
+
+
+ sixbar.set_gearing_all(pros::E_MOTOR_GEAR_GREEN);
+  twobar.set_gearing_all(pros::E_MOTOR_GEAR_GREEN);
+  sixbar.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+  twobar.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+  
+
+  bool r2WasPressed = false;
+  uint32_t clawHoldUntil = 0;
+  constexpr uint32_t CLAW_HOLD_MS = 500;
+
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
@@ -274,53 +334,189 @@ void opcontrol() {
 
     chassis.opcontrol_tank();  // Tank control
   
-   
-   
-
-     
-    PTO_piston.button_toggle(master.get_digital(DIGITAL_A));  
-    
-    if(master.get_digital(DIGITAL_L1)){
-      L_Winch.move(127);
-      R_Winch.move(127);    
-    }
-    if(master.get_digital(DIGITAL_L2)){
-      L_Winch.move(-127);
-      R_Winch.move(-127);    
-    }
-    if(!master.get_digital(DIGITAL_L1) && !master.get_digital(DIGITAL_L2)){
-      L_Winch.move(0);
-      R_Winch.move(0);    
-    }
-   
+   Wing_L.button_toggle(DIGITAL_UP);
+   Wing_R.button_toggle(DIGITAL_X);
 
 
-   uint32_t last_press_time = 0;
-    const int double_press_threshold = 250; // milliseconds
-    // 1. Detect if the button (e.g., Digital A) was just pressed
-        if (master.get_digital_new_press(DIGITAL_R1)) {
-            uint32_t current_time = pros::millis();
 
-            // 2. Check if the time since the last press is within the threshold
-            if (current_time - last_press_time < double_press_threshold) {
-              // is the button is pressed 2 times within 250 milliseconds, it will retract both flippers to go into nuetral position
-               Flip1.set(false);
-               Flip2.set(false);
-             
-            } else {
-                // Single press or first press action
-                   if(is_extended){ // if the button is pressed 1 time and is extended, it will retract the flipper
-                    Flip1.set(false);
-                    Flip2.set(true);
-                   }
-                    if(!is_extended){ //if the button is pressed 1 time and is not extended, it will extend the flipper
-                    Flip1.set(true);
-                    Flip2.set(false);
-                   }
-             }
-            // 3. Update the last press timestamp
-            last_press_time = current_time;
-        }
-    pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  
+
+
+    const bool up        = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+    const bool down      = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+    const bool chainUp = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
+    const bool chainDown = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
+    const bool slowDown  = master.get_digital(pros::E_CONTROLLER_DIGITAL_Y);
+    const bool verySlowDown = master.get_digital(pros::E_CONTROLLER_DIGITAL_X);
+
+    double sixArm = 0;   // wanted arm rpm, six-bar
+    double twoArm = 0;   // wanted arm rpm, 2-bar
+
+    if (upWasPressed && !up) {
+  liftPulseUntil = pros::millis() + LIFT_PULSE_MS;   // L1 just released: start the pulse
   }
+    upWasPressed = up;
+
+
+    if (up && !down) {                              // both lifts up, synced
+      sixArm =  ARM_RPM;
+      twoArm =  ARM_RPM * LIFT_RATIO;
+    } else if (down && !up) {                       // both lifts down, synced
+      sixArm = -ARM_RPM;
+      twoArm = -ARM_RPM * LIFT_RATIO;
+    } else if (verySlowDown && !up && !down) {          // NEW: both lifts down, very slow, synced
+      sixArm = -ARM_RPM * VERY_SLOW_FACTOR;
+      twoArm = -ARM_RPM * VERY_SLOW_FACTOR * LIFT_RATIO * TWO_DOWN_FACTOR;
+    } else if (slowDown && !up && !down) {          // both lifts down, slow, synced
+      sixArm = -ARM_RPM * SLOW_FACTOR;
+      twoArm = -ARM_RPM * SLOW_FACTOR * LIFT_RATIO;
+    } else if (chainUp && !chainDown) {             // chain lift only, up
+      twoArm =  ARM_RPM * LIFT_RATIO;
+    } else if (chainDown && !chainUp) {             // chain only, down
+      twoArm = -ARM_RPM * LIFT_RATIO * TWO_DOWN_FACTOR;
+    } else if (pros::millis() < liftPulseUntil) {       // short down pulse after L1 release
+      sixArm = -ARM_RPM * LIFT_PULSE_FACTOR;
+      twoArm = -ARM_RPM * LIFT_PULSE_FACTOR * LIFT_RATIO;   // ratio only, no TWO_DOWN_FACTOR
+    } else if (pros::millis() >= clawPulseStart && pros::millis() < clawPulseEnd) {
+      sixArm = ARM_RPM * CLAW_LIFT_PULSE_FACTOR;
+      twoArm = ARM_RPM * CLAW_LIFT_PULSE_FACTOR * LIFT_RATIO;
+    }
+
+    // if (twoArm < 0) twoArm *= TWO_DOWN_FACTOR;   // slows the 2-bar on any downward move
+
+
+    if (sixArm == 0) sixbar.brake();
+    else             sixbar.move_velocity(sixArm * SIX_GEAR);
+
+    if (twoArm == 0) twobar.brake();
+    else             twobar.move_velocity(twoArm * TWO_GEAR);
+    
+
+    pros::delay(10);
+
+
+
+
+
+const bool r1 = master.get_digital(DIGITAL_R1);
+const bool r2 = master.get_digital(DIGITAL_R2);
+
+if (r2WasPressed && !r2) {
+  clawHoldUntil  = pros::millis() + CLAW_HOLD_MS;
+  clawPulseStart = clawHoldUntil;
+  clawPulseEnd   = clawPulseStart + CLAW_LIFT_PULSE_MS;
 }
+if (r1 || r2) { clawPulseStart = 0; clawPulseEnd = 0; }
+r2WasPressed = r2;
+
+
+
+if (r2) {
+  Claw.move(-127);
+} else if (r1) {
+  Claw.move(127);
+} else if (pros::millis() < clawHoldUntil) {
+  Claw.move(127);                        // 1-second intake after releasing R2
+} else {
+  Claw.move(0);
+}
+
+
+
+forks.button_toggle(master.get_digital(DIGITAL_UP));
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+  
+  //   if(master.get_digital(DIGITAL_L1)){
+  //     Lift_1.move(127);
+  //     Lift_2.move(127); 
+  //     Lift_3.move(127);
+    
+  //   }
+  //   if(master.get_digital(DIGITAL_L2)){
+  //     Lift_1.move(-127);
+  //     Lift_2.move(-127); 
+  //     Lift_3.move(-127);
+  
+  //   }
+  //   if(master.get_digital(DIGITAL_Y)){
+  //   Lift_1.move(-70);
+  //   Lift_2.move(-70); 
+  //   }
+  //   if(!master.get_digital(DIGITAL_L1) && !master.get_digital(DIGITAL_L2) && !master.get_digital(DIGITAL_Y)){
+  //     Lift_1.move(0);
+  //     Lift_2.move(0); 
+  //     Lift_3.move(0);
+  //   }
+     
+  
+    // if(master.get_digital(DIGITAL_X)){
+    //   Pivot.move(127);
+    // }
+    
+    // if(master.get_digital(DIGITAL_UP)){
+    //   Pivot.move(-127);
+    // }
+
+    // if(!master.get_digital(DIGITAL_X) && !master.get_digital(DIGITAL_UP)){
+    //   Pivot.move(0);
+    // }
+
+    // if(master.get_digital_new_press(DIGITAL_RIGHT)){
+    //  Pivot_Toggle();
+    //  pros::delay(10);
+      
+    // }
+
+    
+
+  //  uint32_t last_press_time = 0;
+  //   const int double_press_threshold = 250; // milliseconds
+  //   // 1. Detect if the button (e.g., Digital A) was just pressed
+  //       if (master.get_digital_new_press(DIGITAL_R1)) {
+  //           uint32_t current_time = pros::millis();
+
+  //           // 2. Check if the time since the last press is within the threshold
+  //           if (current_time - last_press_time < double_press_threshold) {
+  //             // is the button is pressed 2 times within 250 milliseconds, it will retract both flippers to go into nuetral position
+  //              Flip1.set(false);
+  //              Flip2.set(false);
+             
+  //           } else {
+  //               // Single press or first press action
+  //                  if(is_extended){ // if the button is pressed 1 time and is extended, it will retract the flipper
+  //                   Flip1.set(false);
+  //                   Flip2.set(true);
+  //                  }
+  //                   if(!is_extended){ //if the button is pressed 1 time and is not extended, it will extend the flipper
+  //                   Flip1.set(true);
+  //                   Flip2.set(false);
+  //                  }
+  //            }
+  //           // 3. Update the last press timestamp
+  //           last_press_time = current_time;
+  //      }
+    
+  pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  
+  }
+
+

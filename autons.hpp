@@ -2,7 +2,8 @@
 
 void default_constants();
 
-void PP_TEST();
+void Rightside();
+void Skills_Rightside();
 
 void drive_example();
 void turn_example();

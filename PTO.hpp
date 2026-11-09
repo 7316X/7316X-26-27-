@@ -7,10 +7,10 @@
 
 /*PTO Functions*/
 
-bool is_extended = true;
+// bool is_extended = true;
 
-void claw() {
-    is_extended = !is_extended;
+// void claw() {
+//     is_extended = !is_extended;
     
-      PTO_piston.set(is_extended);
-}
+//       PTO_piston.set(is_extended);
+// }

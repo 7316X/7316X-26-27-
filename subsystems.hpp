@@ -2,24 +2,28 @@
 
 #include "EZ-Template/api.hpp"
 #include "api.h"
+#include "autons.hpp"
 
 extern Drive chassis;
 
 // declarations of motors, sensors, etc.
 
-
-inline pros::Motor L_Winch(-5);
-inline pros::Motor R_Winch(6);
-
-inline pros::Motor L_Lift(11);
-inline pros::Motor R_Lift(-12);
+// pros:: Motor Auto_Lift1(-1);
+// pros:: Motor Auto_Lift2(10);
 
 
+inline pros::MotorGroup sixbar({-1, 10});  
+inline pros::MotorGroup twobar({-4, 20});
 
-inline ez::Piston PTO_piston('A');
+inline pros::Motor Lift_1(20);
+inline pros::Motor Lift_2(-20);
+inline pros::Motor Lift_3(-20);
 
-inline ez::Piston Claw('B');
-inline ez::Piston Flip1('C');
-inline ez::Piston Flip2('D');
+inline pros::Motor Claw(5);
 
+inline pros::Motor Pivot(20);
+inline ez::Piston Wing_L('A');
+inline ez::Piston Wing_R('B');
+
+inline ez::Piston forks('C');
 
